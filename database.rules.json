@@ -1,0 +1,168 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "admins": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true) && newData.val() === true"
+      }
+    },
+
+    "admin": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      ".write": false,
+      "uids": { ".read": "auth != null" }
+    },
+
+
+    "products": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      ".indexOn": ["categoryId", "createdAt"],
+      "$pid": {
+        "units": { ".write": false }
+      }
+    },
+
+    "stock": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)"
+    },
+
+    "categories": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)"
+    },
+
+    "announcements": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)"
+    },
+
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)"
+    },
+
+    "reviews": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$rid": {
+        ".write": "(!data.exists() && newData.child('approved').val() === false) || (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".validate": "newData.hasChildren(['name','text']) && newData.child('text').isString() && newData.child('text').val().length <= 1000"
+      }
+    },
+
+    "support": {
+      ".indexOn": ["status", "createdAt"],
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$sid": {
+        ".write": "!data.exists() || (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".validate": "newData.hasChildren(['phone','message','status','createdAt']) && newData.child('phone').isString() && newData.child('phone').val().length <= 24 && newData.child('message').isString() && newData.child('message').val().length <= 2000",
+        "status": { ".validate": "!data.exists() ? newData.val() === 'open' : (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))" },
+        "$other": { ".validate": true }
+      }
+    },
+
+    "discountCodes": {
+      ".read": "auth != null",
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$cid": {
+        "usedCount": { ".write": true, ".validate": "newData.isNumber()" }
+      }
+    },
+
+    "orders_counter": {
+      ".read": false,
+      ".write": true,
+      ".validate": "newData.isNumber()"
+    },
+
+    "orders": {
+      ".indexOn": ["uid", "deviceId", "phoneKey", "createdAt", "status"],
+      
+      ".read": "(auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)) || (query.orderByChild === 'uid' && auth != null && query.equalTo === auth.uid) || (query.orderByChild === 'deviceId' && query.equalTo != null) || (query.orderByChild === 'phoneKey' && query.equalTo != null)",
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+
+      "$oid": {
+        ".read": "auth != null && (data.child('uid').val() === auth.uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".write": "!data.exists() || (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".validate": "newData.hasChildren(['items','total','phone','createdAt']) && newData.child('total').isNumber() && newData.child('phone').isString() && newData.child('phone').val().length <= 24",
+        "status": { ".validate": "!data.exists() ? newData.val() === 'pending' : (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))" },
+        "deliveredCodes": { ".validate": "!data.exists() || (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))" },
+        "$other": { ".validate": true }
+      }
+    },
+
+    "topups_counter": {
+      ".read": false,
+      ".write": "auth != null",
+      ".validate": "newData.isNumber()"
+    },
+
+    "topups": {
+      ".indexOn": ["uid", "status", "createdAt"],
+      ".read": "(auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)) || (query.orderByChild === 'uid' && auth != null && query.equalTo === auth.uid)",
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$tid": {
+        ".read": "auth != null && (data.child('uid').val() === auth.uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".validate": "newData.hasChildren(['uid','amount','status','createdAt']) && newData.child('amount').isNumber() && newData.child('amount').val() > 0 && newData.child('amount').val() <= 500",
+        "status": { ".validate": "!data.exists() ? newData.val() === 'pending' : (auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))" },
+        "$other": { ".validate": true }
+      }
+    },
+
+    "wallet_tx": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        ".write": "auth != null && (auth.uid === $uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))"
+      }
+    },
+
+    "banned_devices": {
+      ".read": true,
+      "$did": {
+        ".write": "auth != null && ((auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true) || (root.child('users').child(auth.uid).child('banned').val() === true && newData.child('uid').val() === auth.uid))"
+      }
+    },
+    "banned_fingerprints": {
+      ".read": true,
+      "$fp": {
+        ".write": "auth != null && ((auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true) || (root.child('users').child(auth.uid).child('banned').val() === true && newData.child('uid').val() === auth.uid))"
+      }
+    },
+    "banned_emails": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)"
+    },
+
+    "users": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && (auth.uid === $uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))",
+        "banned": { ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)" },
+        "bannedAt": { ".write": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)" },
+        "devices": { ".write": "auth != null && (auth.uid === $uid || (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true))" },
+        "balance": {
+          ".write": "auth != null && ((auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true) || (auth.uid === $uid && newData.isNumber() && newData.val() >= 0 && newData.val() <= (data.exists() ? data.val() : 0)))",
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
+      }
+    },
+
+    "visits": {
+      ".read": "auth != null && (auth.uid === 'eh3YXX9DjuMXJCBFzmrUWyidIDv2' || root.child('admins').child(auth.uid).val() === true)",
+      "$day": {
+        "count": { ".write": true, ".validate": "newData.isNumber()" },
+        "pages": { "$page": { ".write": true, ".validate": "newData.isNumber()" } }
+      }
+    }
+  }
+}
